@@ -1,0 +1,318 @@
+
+@import url(http://fonts.googleapis.com/css?family=Codystar|Ubuntu|Black+Ops+One|Audiowide);
+body{
+
+  background-image: url('images/background.png');
+  background-color:black;
+  color:white;
+  padding:0;
+  height: 100%;
+  margin:0px;
+
+}
+::selection {
+  background: #ffd201; /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: #ffd201; /* Gecko Browsers */
+}
+.header{
+  background-image: url('images/background.png');
+  background-color:black;
+  height: 45px;
+  line-height: 45px;
+  width: 100%;
+}
+#logo{
+  width: 350px;
+  height: 41px;
+
+}
+#date{
+  font-size: 100%;
+  color: lightgreen;
+  font-family: 'Codystar', cursive;
+  float:left;
+  width:380px;
+  position: absolute;
+  top:0px;
+  right:0px;
+  text-shadow: .5px .5px white;
+}
+.nav ul li{
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 22px;
+  display:inline;
+  color: white;
+  padding-left: 1.75%;
+  padding-right: 1.75%;
+  padding-top:8px;
+  padding-bottom: 4px;
+  list-style-type:none;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  text-shadow: 2px 2px rgba(0, 0, 0, .8);
+}
+
+#code-li{
+
+}
+#portfolio-li{
+
+}
+#links-li{
+
+}
+#contact-li{
+
+
+}
+#aboutmenu{
+  height:48px;
+  visibility:hidden;
+  color:white;
+  top:45px;
+  background-color: rgba(33, 93, 173, .8);
+  width:100%;
+  position:absolute;
+}
+#aboutmenu ul li{
+  font-size: 20px;
+}
+
+#codemenu{
+  height:48px;
+  visibility:hidden;
+  color:white;
+  top:45px;
+  background-color:rgba(41, 44, 123, .8);
+  width:100%;
+  position:absolute;
+}
+#codemenu ul li{
+  font-size: 20px;
+}
+#portfoliomenu{
+  height:48px;
+  color:white;
+  visibility:hidden;
+  top:45px;
+  background-color:rgba(206, 52, 16, .8);
+  width:100%;
+  position:absolute;
+}
+#portfoliomenu ul li{
+  font-size: 20px;
+}
+#linksmenu{
+  height:48px;
+  color:white;
+  visibility:hidden;
+  top:45px;
+  background-color:rgba(231, 101, 0, .8);
+  width:100%;
+  position:absolute;
+}
+#linksmenu ul li{
+  font-size: 20px;
+}
+
+#contactmenu{
+  height:48px;
+  color:white;
+  visibility:hidden;
+  top:45px;
+  background-color:rgba(33, 146, 49, .8);
+  width:100%;
+  position:absolute;
+}
+#contactmenu ul li{
+  font-size: 20px;
+}
+a:link {
+  color: white;
+}
+
+/* visited link */
+a:visited {
+  color:lightgrey;
+}
+
+/* mouse over link */
+a:hover {
+  color: lightgrey;
+}
+
+/* selected link */
+a:active {
+  color: lightgrey;
+}
+
+
+.nav{
+  background-image: url('/assets/images/menubackground.png');
+  background-color: black;
+  display:inline;
+  height: 45px;
+  vertical-align:middle;
+  width:100%;
+  position:relative;
+  float:left;
+  text-align:center;
+  z-index:1000;
+}
+#content{
+    font-family: 'Ubuntu', cursive;
+    font-size: 26px;
+background-color: rgba(255, 255, 255, 0.32);
+width:100%;
+text-align: center;
+}
+
+#description{
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.32);
+  width:95%;
+  margin-right: auto;
+  margin-left: auto;
+  float: center;
+  text-align: left;
+}
+#maindiv{
+    font-family: 'Ubuntu', cursive;
+    font-size: 26px;
+    text-align: center;
+    background: -webkit-linear-gradient(#1f5cac, #282e7b, #ce3312, #e66703, #e6b403, #229335 ); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#1f5cac, #282e7b, #ce3312, #e66703, #e6b403, #229335); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#1f5cac, #282e7b, #ce3312, #e66703, #e6b403, #229335); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#1f5cac, #282e7b, #ce3312, #e66703, #e6b403, #229335); /* Standard syntax (must be last) */
+}
+#footer{
+
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.9);
+  color:white;
+  position:fixed;
+  bottom:0px;
+  width:100%;
+  height:300px;   /* Height of the footer */
+  -webkit-transition: height 1s, visibility 1s;
+  transition: height 1s, visibility 1s;
+}
+#footerbuttondown{
+  background-color: darkgrey;
+  color:blue;
+  font-size: 35px;
+  width:35px;
+  margin-left:auto;
+  margin-right:auto;
+  text-align: center;
+  position: relative;
+  top:-20px;
+  border-radius:5px;
+  border-radius:5px;
+  opacity: .8;
+}
+#footerbuttonup{
+  background-color: darkgrey;
+  color:blue;
+  font-size: 35px;
+  width:35px;
+  margin-left:auto;
+  margin-right:auto;
+  text-align: center;
+  position: relative;
+  top:-60px;
+  border-radius:5px;
+  border-radius:5px;
+  visibility:hidden;
+  opacity: .8;
+}
+#footercont{
+  width: 100%;
+  float: center;
+  position:relative;
+  top:0px;
+  opacity:1;
+  transition: opacity 1s, visibility 2s, display 2s;
+  margin-left: auto;
+  margin-right: auto;
+}
+#sitemapdiv{
+  position: relative;
+  width:150px;
+}
+#sitemapdiv,#sitemaptitle{
+   font-family: 'Black Ops One', sans-serif;
+  display:inline;
+  float:left;
+}
+
+#centerbutton{
+  width:100%;
+
+}
+
+#mapwrapper{
+  top:10px;
+  float: center;
+  display: inline;
+  width: 100%;
+  margin:auto;
+  height:100%;
+}
+
+#aboutmap{
+color:rgba(33, 93, 173, .8);
+  display:inline;
+  width: 150px;
+  background-color:blue;
+  flaot:left;
+}
+#aboutmap ul li a:link{color:#1f5cac;}
+#aboutmap ul li a:hover{color:#3669ab;}
+#aboutmap ul li a:visited{color:#738aa9;}
+
+#codemap{
+    color:#282e7b;
+    height:100%;
+    display:inline;
+    width: 50px;
+    background-color:blue;
+}
+#codemap ul li a:link{color:#282e7b;}
+#codemap ul li a:hover{color:#3d417a;}
+#codemap ul li a:visited{color:#5d607e;}
+
+#portfoliomap{
+  color:#ce3312;
+  display:inline;
+  width: 50px;
+  background-color:blue;
+
+}
+#portfoliomap ul li a:link{color:#ce3312;}
+#portfoliomap ul li a:hover{color:#cd5a41;}
+#portfoliomap ul li a:visited{color:#cd7461;}
+
+#linksmap{
+color:#e66703;
+display:inline;
+width: 50px;
+background-color:blue;
+}
+#linksmap ul li a:link{color:#e66703;}
+#linksmap ul li a:hover{color:#e4863c;}
+#linksmap ul li a:visited{color:#dd9055;}
+
+#contactmap{
+  color:#229335;
+  display:inline;
+  width: 50px;
+  background-color:blue;
+}
+#contactmap ul li a:link{color:#208d33;}
+#contactmap ul li a:hover{color:#41934f;}
+#contactmap ul li a:visited{color:#759079;}

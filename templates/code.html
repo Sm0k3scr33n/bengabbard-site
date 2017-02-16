@@ -1,0 +1,241 @@
+ {{define "meta-data"}}
+
+<meta name="description" content="" />
+<meta name="keywords" content="" /> {{end}} {{define "title"}}bengabbard.us Home{{end}} {{define "javascript"}}
+</script>
+<style>
+    .parallax-container {
+        height: auto;
+        padding-top: 30px;
+    }
+
+    body {
+        background-color: #003959;
+    }
+    p {
+    text-indent: 50px;
+}
+
+.container{
+    color: black;
+}
+    .background-1 {
+        max-width: 500px;
+        height: 250px;
+        position: relative;
+        background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/130527/water.jpeg') no-repeat;
+        background-size: cover;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        border-radius: 0px;
+        margin: 0 auto;
+    }
+
+    .foreground {
+        max-width: 90%;
+        height: 85%;
+        position: relative;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%) translateZ(50px);
+        -moz-transform: translate(-50%, -50%) translateZ(50px);
+        -ms-transform: translate(-50%, -50%) translateZ(50px);
+        -o-transform: translate(-50%, -50%) translateZ(50px);
+        transform: translate(-50%, -50%) translateZ(50px);
+    }
+
+    @media (max-width: 768px) {
+        .background {
+            height: 300px;
+        }
+        .foreground {
+            max-width: 60%;
+        }
+    }
+</style>
+{{end}} {{define "nav-slider"}} {{end}} {{define "header"}} {{end}} {{define "nav"}} {{end}}
+<!--end of nav definition-->
+
+
+{{define "body"}}
+<div class="white container" style="padding-left: 4.333%; padding-right: 4.333%;" >
+    <h1>Website Hosting with Templates in GOLANG</h1>
+    <h5> By Ben Gabbard</h5>
+    <h6>January 31, 2017</h6>
+    <p>There are some striking advantages in developing microservices in golang.
+        One of the most significant being the simple ability to code static website servers very quickly.
+        With Golang we have the functionality of full webserver directly in our application. Golang is
+        uniquely designed with front to back support for application development, it compiles down to binary and thus benchmarks
+        much faster than other languages like Java which utilize a virtual machine layer between compiled java code and the
+        processor.
+</p>
+<p>
+        The benefit of implementing a functional language structure to Golang makes the language well suited for
+        carying out important tasks in a way which simplifies and streamlines development. For example, deploying a simple
+        golang server is as easy as a few lines of code and offers a lot of power:
+</p>
+        <div class="" style="overflow: scroll; ">
+            <div class="card" style="height: 270px;"><pre data-start="1"><code class="language-go line-numbers">package main
+import (
+	"net/http"
+)
+func main() {
+	//define a variable for the FileServer directory
+	var fs = http.FileServer(http.Dir("static"))
+	//express the handler function
+	http.Handle("/", fs)
+	//finally we Listen for requests and serve them up on a specific port
+	http.ListenAndServe(":8181", nil)
+}
+</code>
+                </pre>
+            </div>
+        </div><p >
+    In this simple server program if we place an index.html file in the 'static' directory, the file will
+    be served up to the request. There is no real magic to this. When we execute the build command from command line we get a
+    resulting binary that can then be executed:
+</p>
+        <div class="" style=" ">
+            <div class="card" style="">
+                <pre >
+<code class="language-bash ">
+$ go build main.go
+$ go ./main
+</code>
+
+
+                </pre>
+<p>We can also use the shortcut command in development:</p>
+                <pre >
+<code class="language-bash ">
+$ go run main.go
+</code>
+
+
+                </pre>
+            </div>
+        </div>
+Go offers a great solution out of the box for producing a simple
+        this is some code I wrote to help me understand the scope of creating a commercial website utilizing go as the backend.</p>
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 400px;">
+
+            <pre data-start="1"><code class="language-go line-numbers">
+
+    package main
+
+    import (
+    	"fmt"
+    	"html/template"
+    	"log"
+    	"net"
+    	"net/http"
+    	"os"
+    	"path"
+    )
+
+    func TemplateHandler(w http.ResponseWriter, r *http.Request) {
+    	///define our primary layout definition for the global structure of the website
+    	layoutpath := path.Join("templates", "layout.html")
+    	filepath := path.Join("templates", r.URL.Path)
+    	//handle the requests to the home directory by redirecting to the index file
+    	indexpath := path.Join("templates", "/")
+    	if filepath == indexpath {
+    		http.Redirect(w, r, "index.html", 301)
+    		return
+    	}
+
+    	// 404 if the template doesn't exist
+    	info, err := os.Stat(filepath)
+    	if err != nil {
+    		if os.IsNotExist(err) {
+    			//handle 404 errors by redirecting to the 404.html page template
+    			http.Redirect(w, r, "../404.html", 301)
+    			ip, port, err := net.SplitHostPort(r.RemoteAddr)
+    			if err != nil {
+    				log.Print("Request IP: [", r.RemoteAddr, "] is not IP:port")
+    			}
+    			RequestIP := net.ParseIP(ip)
+    			if RequestIP == nil {
+    				log.Print("Request IP: [", r.RemoteAddr, "] is not IP:port")
+    				return
+    			}
+    			log.Println("#############################")
+    			log.Println("#### Requested Path: ", r.URL.Path)
+    			log.Println("#### IP: ", ip)
+    			log.Println("#### Port: ", port)
+    			log.Println("#############################")
+    			return
+    		}
+    	}
+
+    	// 404 if the request is for a directory
+    	if info.IsDir() {
+    		//handle 404 errors by redirecting to the 404.html page template
+    		http.Redirect(w, r, "../404.html", 301)
+    		// get client IP address
+    		ip, port, err := net.SplitHostPort(r.RemoteAddr)
+    		if err != nil {
+    			log.Print("Request IP: [", r.RemoteAddr, "] is not IP:port")
+    		}
+    		userIP := net.ParseIP(ip)
+    		if userIP == nil {
+    			log.Print("Request IP: [", r.RemoteAddr, "] is not IP:port")
+    			return
+    		}
+    		log.Println("#############################")
+    		log.Println("#### Request: ", r.URL.Path)
+    		log.Println("#### IP: ", ip)
+    		log.Println("#### Port: ", port)
+    		log.Println("#############################")
+    		return
+    	}
+
+    	tmpl, err := template.ParseFiles(layoutpath, filepath)
+    	if err != nil {
+    		// Log the detailed error
+    		log.Println(err.Error())
+    		// Return a generic "Internal Server Error" message
+    		http.Error(w, http.StatusText(500), 500)
+    		return
+    	}
+
+    	if err := tmpl.ExecuteTemplate(w, "layout", nil); err != nil {
+    		log.Println(err.Error())
+    		http.Error(w, http.StatusText(500), 500)
+    		fmt.Fprintf(w, "error formatting layout")
+    	}
+    }
+    func redirect(w http.ResponseWriter, req *http.Request) {
+        // remove/add not default ports from req.Host
+        target := "https://" + req.Host + req.URL.Path
+        if len(req.URL.RawQuery) > 0 {
+            target += "?" + req.URL.RawQuery
+        }
+        log.Printf("redirect to: %s", target)
+        http.Redirect(w, req, target,
+                // see @andreiavrammsd comment: often 307 > 301
+                http.StatusTemporaryRedirect)
+    }
+    func main() {
+    	//  define the folder name
+    	assetsdir := "assets"
+    	//  this is the path to the directory i.e. the directory which will host the  assets like js, css, and image files
+    	fileserver := http.FileServer(http.Dir(assetsdir))
+    	//  serve up a http handler for the request at the directory where the assets like images, css, and javascript will reside
+    	http.Handle("/"+assetsdir+"/", http.StripPrefix("/"+assetsdir+"/", fileserver))
+    	//server up the template to point to the root directory of the site
+    	http.HandleFunc("/", TemplateHandler)
+    	port := ":80"
+        go http.ListenAndServe(port, http.HandlerFunc(redirect))
+    	log.Println("Program Started")
+    	log.Println("Listening on port", port)
+    	// http.ListenAndServe(port, nil)
+        http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil)
+    }
+
+</code></pre>
+        </div>
+    </div>
+</div>
+{{end}} {{define "footer"}} {{end}} {{define "bottom-bar"}} {{end}}
