@@ -109,8 +109,6 @@ func main() {
 
     //I just also want to handle the favicon because it appears to throw an error in the browser console
     http.HandleFunc("/favicon.ico", faviconHandler)
-
-
 	port := ":80"
     go http.ListenAndServe(port, http.HandlerFunc(redirect))
 	log.Println("Program Started")

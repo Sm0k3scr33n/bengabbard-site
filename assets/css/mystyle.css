@@ -3,7 +3,7 @@
 body{
 
   background-image: url('images/background.png');
-  background-color:black;
+    background-color: #003959;
   color:white;
   padding:0;
   height: 100%;
@@ -135,7 +135,7 @@ a:link {
 
 /* visited link */
 a:visited {
-  color:lightgrey;
+  color:darkgray;
 }
 
 /* mouse over link */
