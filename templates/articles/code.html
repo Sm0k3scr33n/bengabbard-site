@@ -1,0 +1,506 @@
+ {{define "meta-data"}}
+
+<meta name="description" content="" />
+<meta name="keywords" content="" /> {{end}} {{define "title"}}bengabbard.us Home{{end}} {{define "javascript"}}
+</script>
+<style>
+    .parallax-container {
+        height: auto;
+        padding-top: 30px;
+    }
+
+    body {
+        background-color: #003959;
+    }
+
+    p {
+        text-indent: 50px;
+    }
+
+    .container {
+        color: black;
+    }
+
+    .background-1 {
+        max-width: 500px;
+        height: 250px;
+        position: relative;
+        background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/130527/water.jpeg') no-repeat;
+        background-size: cover;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        border-radius: 0px;
+        margin: 0 auto;
+    }
+
+    .foreground {
+        max-width: 90%;
+        height: 85%;
+        position: relative;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%) translateZ(50px);
+        -moz-transform: translate(-50%, -50%) translateZ(50px);
+        -ms-transform: translate(-50%, -50%) translateZ(50px);
+        -o-transform: translate(-50%, -50%) translateZ(50px);
+        transform: translate(-50%, -50%) translateZ(50px);
+    }
+
+    @media (max-width: 768px) {
+        .background {
+            height: 300px;
+        }
+        .foreground {
+            max-width: 60%;
+        }
+    }
+</style>
+{{end}} {{define "nav-slider"}} {{end}} {{define "header"}} {{end}} {{define "nav"}} {{end}}
+<!--end of nav definition-->
+
+
+{{define "body"}}
+<div class="white container" style="padding-left: 4.333%; padding-right: 4.333%;">
+    <h1>Website Hosting with Templates in GOLANG</h1>
+    <h5> By Ben Gabbard</h5>
+    <h6>January 31, 2017</h6>
+    </br>
+    <h3><b>Intro</b></h3>
+    <p>There are some striking advantages in developing microservices in golang. One of the most significant being the simple ability to code static website servers very quickly. With Golang we have the functionality of full webserver directly in our application.
+        Golang is uniquely designed with front to back support for application development, it compiles down to binary and thus benchmarks much faster than other languages like Java which utilize a virtual machine layer between compiled java code and
+        the processor.
+    </p>
+    <h3><b>A Simple Webserver</b></h3>
+    <p>
+        The benefit of implementing a functional language structure to Golang makes the language well suited for carying out important tasks in a way which simplifies and streamlines development. For example, deploying a simple golang server is as easy as a few
+        lines of code and offers a lot of power:
+    </p>
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 270px;"><pre data-start="1"><code class="language-go line-numbers">package main
+import (
+	"net/http"
+)
+func main() {
+	//define a variable for the FileServer directory
+	var fs = http.FileServer(http.Dir("static"))
+	//express the handler function
+	http.Handle("/", fs)
+	//finally we Listen for requests and serve them up on a specific port
+	http.ListenAndServe(":8181", nil)
+}</code></pre>
+        </div>
+    </div>
+    <p>
+        In this simple server program if we place an index.html file in the 'static' directory, the file will be served up to the request. There is no real magic to this. We have a simple variable to point to a specific directory on our server then we call a
+        http handler function to the filepath. Finally, we call the http.ListenAndServe() function and define a port to serve on. When we execute the build command from command line we get a resulting binary that can then be executed and we are now hosting
+        with a full webserver:
+    </p>
+    <div class="" style=" ">
+        <div class="card" style="">
+            <pre><code class="language-bash ">$ go build main.go
+$ ./main</code></pre>
+            <p>We can also use the shortcut command in development:</p>
+            <pre>
+<code class="language-bash ">$ go run main.go</code></pre>
+        </div>
+    </div>
+
+    <h3><b>Adding simple Security with Certificates</b></h3>
+    <p>
+        Without overthinking the process, we want to secure our website client and server communications. We do this with TLS and golang makes the process super easy. THe only change to our program will be calling http.ListenAndServeTLS() function and generating
+        self-signed or certificates from a certificate Authority like Letsencrypt.org.
+
+    </p>
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 270px;"><pre data-start="1"><code class="language-go line-numbers">package main
+import (
+"net/http"
+)
+func main() {
+//define a variable for the FileServer directory
+var fs = http.FileServer(http.Dir("static"))
+//express the handler function
+http.Handle("/", fs)
+//finally we Listen for requests and serve them up on a specific port
+http.ListenAndServeTLS(":8181", "cert.pem", "key.pem", nil)
+
+}</code></pre>
+        </div>
+    </div>
+    <p>
+        Dont worry too much about the following script, it is designed to be
+        compiled and ran soley to produce a self-signed server certificate. You
+        can also find the certificate generation script on the offical Go site:
+        <a href="https://golang.org/src/crypto/tls/generate_cert.go"
+            target="_blank">Here</a>
+
+
+    </p>
+
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 270px;"><pre data-start="1"><code class="language-go line-numbers">package main
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// +build ignore
+
+// Generate a self-signed X.509 certificate for a TLS server. Outputs to
+// 'cert.pem' and 'key.pem' and will overwrite existing files.
+
+package main
+
+import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"flag"
+	"fmt"
+	"log"
+	"math/big"
+	"net"
+	"os"
+	"strings"
+	"time"
+)
+
+var (
+	host       = flag.String("host", "", "Comma-separated hostnames and IPs to generate a certificate for")
+	validFrom  = flag.String("start-date", "", "Creation date formatted as Jan 1 15:04:05 2011")
+	validFor   = flag.Duration("duration", 365*24*time.Hour, "Duration that certificate is valid for")
+	isCA       = flag.Bool("ca", false, "whether this cert should be its own Certificate Authority")
+	rsaBits    = flag.Int("rsa-bits", 2048, "Size of RSA key to generate. Ignored if --ecdsa-curve is set")
+	ecdsaCurve = flag.String("ecdsa-curve", "", "ECDSA curve to use to generate a key. Valid values are P224, P256, P384, P521")
+)
+
+func publicKey(priv interface{}) interface{} {
+	switch k := priv.(type) {
+	case *rsa.PrivateKey:
+		return &k.PublicKey
+	case *ecdsa.PrivateKey:
+		return &k.PublicKey
+	default:
+		return nil
+	}
+}
+
+func pemBlockForKey(priv interface{}) *pem.Block {
+	switch k := priv.(type) {
+	case *rsa.PrivateKey:
+		return &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(k)}
+	case *ecdsa.PrivateKey:
+		b, err := x509.MarshalECPrivateKey(k)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to marshal ECDSA private key: %v", err)
+			os.Exit(2)
+		}
+		return &pem.Block{Type: "EC PRIVATE KEY", Bytes: b}
+	default:
+		return nil
+	}
+}
+
+func main() {
+	flag.Parse()
+
+	if len(*host) == 0 {
+		log.Fatalf("Missing required --host parameter")
+	}
+
+	var priv interface{}
+	var err error
+	switch *ecdsaCurve {
+	case "":
+		priv, err = rsa.GenerateKey(rand.Reader, *rsaBits)
+	case "P224":
+		priv, err = ecdsa.GenerateKey(elliptic.P224(), rand.Reader)
+	case "P256":
+		priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	case "P384":
+		priv, err = ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
+	case "P521":
+		priv, err = ecdsa.GenerateKey(elliptic.P521(), rand.Reader)
+	default:
+		fmt.Fprintf(os.Stderr, "Unrecognized elliptic curve: %q", *ecdsaCurve)
+		os.Exit(1)
+	}
+	if err != nil {
+		log.Fatalf("failed to generate private key: %s", err)
+	}
+
+	var notBefore time.Time
+	if len(*validFrom) == 0 {
+		notBefore = time.Now()
+	} else {
+		notBefore, err = time.Parse("Jan 2 15:04:05 2006", *validFrom)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to parse creation date: %s\n", err)
+			os.Exit(1)
+		}
+	}
+
+	notAfter := notBefore.Add(*validFor)
+
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	if err != nil {
+		log.Fatalf("failed to generate serial number: %s", err)
+	}
+
+	template := x509.Certificate{
+		SerialNumber: serialNumber,
+		Subject: pkix.Name{
+			Organization: []string{"Acme Co"},
+		},
+		NotBefore: notBefore,
+		NotAfter:  notAfter,
+
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		BasicConstraintsValid: true,
+	}
+
+	hosts := strings.Split(*host, ",")
+	for _, h := range hosts {
+		if ip := net.ParseIP(h); ip != nil {
+			template.IPAddresses = append(template.IPAddresses, ip)
+		} else {
+			template.DNSNames = append(template.DNSNames, h)
+		}
+	}
+
+	if *isCA {
+		template.IsCA = true
+		template.KeyUsage |= x509.KeyUsageCertSign
+	}
+
+	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, publicKey(priv), priv)
+	if err != nil {
+		log.Fatalf("Failed to create certificate: %s", err)
+	}
+
+	certOut, err := os.Create("cert.pem")
+	if err != nil {
+		log.Fatalf("failed to open cert.pem for writing: %s", err)
+	}
+	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+	certOut.Close()
+	log.Print("written cert.pem\n")
+
+	keyOut, err := os.OpenFile("key.pem", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		log.Print("failed to open key.pem for writing:", err)
+		return
+	}
+	pem.Encode(keyOut, pemBlockForKey(priv))
+	keyOut.Close()
+	log.Print("written key.pem\n")
+}
+</code>
+        </pre>
+        </div>
+    </div>
+    <p>If we simply save the above script as generate_cert.go, we can build the
+     script and the result will be the certificates we need to encapsulate our program with tls support:</p>
+
+    <div class="" style=" ">
+        <div class="card" style="">
+            <pre><code class="language-bash ">$ go run generate_cert.go</code></pre>
+        </div>
+    </div>
+
+
+
+
+    <h3><b>Adding and Handling Templates with 404 pages</b></h3> Go offers a great solution out of the box for producing a simple website server. this is some code I wrote to help me understand the scope of creating a commercial website utilizing go as the backend. you can download this code here, or you can use
+    gitub to download it to a working directory</p>
+
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 50px;">
+            <pre data-start="1">
+<code class="language-bash">$ git clone https://github.com/Sm0k3scr33n/static-go-site.git </code></pre>
+        </div>
+    </div>
+
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 400px;">
+
+            <pre data-start="1"><code class="language-go line-numbers">
+
+package main
+///Notice some of the libraries we call for our application
+import (
+	"fmt"
+	"html/template"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"path"
+)
+
+func TemplateHandler(w http.ResponseWriter, r *http.Request) {
+	///define our primary layout definition for the global structure of the website
+	layoutpath := path.Join("templates", "layout.html")
+	filepath := path.Join("templates", r.URL.Path)
+	//handle the requests to the home directory by redirecting to the index file
+	indexpath := path.Join("templates", "/")
+	if filepath == indexpath {
+		http.Redirect(w, r, "index.html", 301)
+		return
+	}
+
+	// 404 if the template doesn't exist
+	info, err := os.Stat(filepath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			//handle 404 errors by redirecting to the 404.html page template
+			http.Redirect(w, r, "../404.html", 301)
+			ip, port, err := net.SplitHostPort(r.RemoteAddr)
+			if err != nil {
+				log.Print("Request IP: [", r.RemoteAddr, "] is not IP:port")
+			}
+			RequestIP := net.ParseIP(ip)
+			if RequestIP == nil {
+				log.Print("Request IP: [", r.RemoteAddr, "] is not IP:port")
+				return
+			}
+			log.Println("#############################")
+			log.Println("#### Requested Path: ", r.URL.Path)
+			log.Println("#### IP: ", ip)
+			log.Println("#### Port: ", port)
+			log.Println("#############################")
+			return
+		}
+	}
+
+	// 404 if the request is for a directory
+	if info.IsDir() {
+		//handle 404 errors by redirecting to the 404.html page template
+		http.Redirect(w, r, "../404.html", 301)
+		// get client IP address
+		ip, port, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			log.Print("Request IP: [", r.RemoteAddr, "] is not IP:port")
+		}
+		userIP := net.ParseIP(ip)
+		if userIP == nil {
+			log.Print("Request IP: [", r.RemoteAddr, "] is not IP:port")
+			return
+		}
+		log.Println("#############################")
+		log.Println("#### Request: ", r.URL.Path)
+		log.Println("#### IP: ", ip)
+		log.Println("#### Port: ", port)
+		log.Println("#############################")
+		return
+	}
+
+	tmpl, err := template.ParseFiles(layoutpath, filepath)
+	if err != nil {
+		// Log the detailed error
+		log.Println(err.Error())
+		// Return a generic "Internal Server Error" message
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	if err := tmpl.ExecuteTemplate(w, "layout", nil); err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(500), 500)
+		fmt.Fprintf(w, "error formatting layout")
+	}
+}
+func redirect(w http.ResponseWriter, req *http.Request) {
+    // remove/add not default ports from req.Host
+    target := "https://" + req.Host + req.URL.Path
+    if len(req.URL.RawQuery) > 0 {
+        target += "?" + req.URL.RawQuery
+    }
+    log.Printf("redirect to: %s", target)
+    http.Redirect(w, req, target,
+            // see @andreiavrammsd comment: often 307 > 301
+            http.StatusTemporaryRedirect)
+}
+func main() {
+	//  define the folder name
+	assetsdir := "assets"
+	//  this is the path to the directory i.e. the directory which will host the  assets like js, css, and image files
+	fileserver := http.FileServer(http.Dir(assetsdir))
+	//  serve up a http handler for the request at the directory where the assets like images, css, and javascript will reside
+	http.Handle("/"+assetsdir+"/", http.StripPrefix("/"+assetsdir+"/", fileserver))
+	//server up the template to point to the root directory of the site
+	http.HandleFunc("/", TemplateHandler)
+	port := ":80"
+    go http.ListenAndServe(port, http.HandlerFunc(redirect))
+	log.Println("Program Started")
+	log.Println("Listening on port", port)
+	// http.ListenAndServe(port, nil)
+    http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil)
+}
+
+</code></pre>
+
+
+        </div>
+
+    </div>
+    <p>We're basically almost there. Our Content gets parsed into the layout.html template. So for each new page we would like to include in our website, we will create that page with definitions for the various content attributes we would like to include.
+        Basically we've achieve all of our template handleing with a single function. Any requests made to paths which do not exist are redirected to a 404.html page to tell the user when they reach a path that does not exist. Any content elements defind
+        within the double curly braces must also be referenced in our layout.html template. In essence template rendering in golang is maybe a bit different than other languages in that we entrust the content rendering to the compiled application rather
+        than referencing or including pages within pages. This is more pragmatic because in respect to golang's design we choose to invoke handler functions as a means of pointing or sending requested content to our user. While this may feel different
+        than languages like PHP or .NET the end result is better because we are relying on the relyability of of golangs innate serving features.
+
+    </p>
+    <p>
+        <h3><b>Adding Server Certificates From A Certificate Authority (CA)</b></h3> From this point on there is nothing stopping you from deploying this application on a server and pointing your domain to the ip of that server in order to hosti your golang website. But we might want to consider that you also have the full ability
+        to ad new handlers like post and get handlers to begin incorporating REST services on your own website. For this however it is in good practice to begin implementing tls certificates as a means of ensuring security of any data passing between
+        your users and your server. Using a certificate Authority will help you ensure that your certificate is truly unique in the scope of all certificates, which verifies that your certificate is truly going to be unique. Probably the best way to implement
+        certificates are by way of the LETsencrypt.org lets encrypt allows you to easily generate signed time sensative (about 60 days) that point to your domain name. This will semantically provide your website with more assurance in regaurds to security.
+        First, if you are using a Linux distro like Ubuntu:
+
+
+    </p>
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 50px;">
+            <pre data-start="1">
+<code class="language-bash">$ sudo apt-get install letsencrypt </code>
+        </pre>
+        </div>
+    </div>
+    <p>
+        At this point letsencrypt is installed on the system and we can generate new certs for the websites. We can now run the following command to generate certificates. if we have multiple domains or subdomains, we can generate certs for those domains as well.
+    </p>
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 50px;">
+            <pre data-start="1">
+<code class="language-bash">$ letsencrypt certonly --standalone -d example.com -d www.example.com</code>
+        </pre>
+        </div>
+    </div>
+    <p>
+        As you can see we simply state the name of our domain with both the 'www' prefix and without so that both path requests will work with our the path our user is requesting. Golang is awesome because it will assume both in order to prevent path designation
+        mistakes with post and get commands. Just as a word of caution, some OS's are a bit picky with paths and some use case sensative rules so make sure you are consistent from front to back with character casing. Once the keys are generated, we just
+        need to move them into the directory in which our application resides. at this point we want to copy the keys for our website to our working directory
+    </p>
+<h3><b>Deployment Time!</b></h3>
+<p>
+at this point we have written an application that hosts files and parses documents in order
+to produce a full website with resonable content managemnt using go's fabulous template
+engine. The next step is to run our application on a production server and prove its viability for
+the real world. Now you might just want to go ahead and run the application as root
+on the server. However, if you look at server software like nginx or apache, you will see that
+these servers actually run as www-data. It is actually in better practice
+to run service as a non root user as a means to avoid inadvertant security vulnerabilities
+which may be unknowingly inheriant in our application or its core functionality. For example,
+if a golang application became vulnerable and an adversary gains access to this, they may
+also be able to perform changes which might cause harm to the architecture and other senstive data. By running
+the application is less likely to provide anyone with significant linux/unix access priveleges.
+</br></br></br>
+</p>
+</div>
+{{end}} {{define "footer"}} {{end}} {{define "bottom-bar"}} {{end}}

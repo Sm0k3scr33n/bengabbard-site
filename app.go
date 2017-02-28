@@ -114,5 +114,5 @@ func main() {
 	log.Println("Program Started")
 	log.Println("Listening on port", port, "redirecting to tls port 443....")
 	// http.ListenAndServe(port, nil)
-    http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil)
+    http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil)
 }
