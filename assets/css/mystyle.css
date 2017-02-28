@@ -1,8 +1,7 @@
 
-@import url(http://fonts.googleapis.com/css?family=Codystar|Ubuntu|Black+Ops+One|Audiowide);
+@import url(https://fonts.googleapis.com/css?family=Codystar|Ubuntu|Black+Ops+One|Audiowide);
 body{
 
-  background-image: url('images/background.png');
     background-color: #003959;
   color:black;
   padding:0;
@@ -17,7 +16,6 @@ body{
   background: #ffd201; /* Gecko Browsers */
 }
 .header{
-  background-image: url('images/background.png');
   background-color:black;
   height: 45px;
   line-height: 45px;
