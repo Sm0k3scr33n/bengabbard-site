@@ -1,0 +1,274 @@
+ {{define "meta-data"}}
+
+<meta name="description" content="" />
+<meta name="keywords" content="" /> {{end}} {{define "title"}}bengabbard.us Home{{end}} {{define "javascript"}}
+</script>
+<style>
+    .parallax-container {
+        height: auto;
+        padding-top: 30px;
+    }
+
+    body {
+        background-color: #003959;
+    }
+
+    p {
+        text-indent: 50px;
+    }
+
+    .container {
+        color: black;
+    }
+
+    .background-1 {
+        max-width: 500px;
+        height: 250px;
+        position: relative;
+        background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/130527/water.jpeg') no-repeat;
+        background-size: cover;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        border-radius: 0px;
+        margin: 0 auto;
+    }
+
+    .foreground {
+        max-width: 90%;
+        height: 85%;
+        position: relative;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%) translateZ(50px);
+        -moz-transform: translate(-50%, -50%) translateZ(50px);
+        -ms-transform: translate(-50%, -50%) translateZ(50px);
+        -o-transform: translate(-50%, -50%) translateZ(50px);
+        transform: translate(-50%, -50%) translateZ(50px);
+    }
+
+    @media (max-width: 768px) {
+        .background {
+            height: 300px;
+        }
+        .foreground {
+            max-width: 60%;
+        }
+    }
+</style>
+{{end}} {{define "nav-slider"}} {{end}} {{define "header"}} {{end}} {{define "nav"}} {{end}}
+<!--end of nav definition-->
+
+
+{{define "body"}}
+<div class="white container" style="padding-left: 4.333%; padding-right: 4.333%;">
+    <h1>Pass The Hash Attack with John The Ripper</h1>
+    <h5> By Ben Gabbard</h5>
+    <h6>November 20, 2016</h6>
+    </br>
+    <h3><b>Intro</b></h3>
+    <p>It's a scenario right out of a spy film. Password cracking
+        and breaking into systems covertly and without the adversary being aware. We know these attacks
+        by a few names including brute forcing, pass the hash, and cracking. Essentially they are all
+        the same and iterate over lists in order to hopefully bypass security protocol. </br></br>
+
+        While it may sound a lot like fiction, many systems are highly vulnerable to these types
+        of attacks and even implement less desireable cryptographic function.
+        To begin with, we are not corrupting the system from the outside in but rather from
+        the inside out.
+    </br></br>
+    <b>The scenario sets up something like this:</b> 
+</br></br>
+        Your boss is concerned someone in the company is selling internal secrets and
+        hes has his suspicians about an employee. Instead of confronting the employee, your boss
+        asks you if it is possible to log into  the users account and examine the users files and logged
+        activity by breaking the users password hash.
+    </br></br>
+        You as the administrator have root priveledges already but what we want to find out
+        the user password. We already have the hash value. We can actually do this in two ways simply by examining the shadow file.
+        The first is to use a password List. A password list can be an interesting choice if the victem is predictable and likely to impliment
+        a very weak or easy to guess password. While password lists are rudimentary, they can be effective
+        if the attacker has good insight to the victems way of thinking. The next option is to consider
+        the cryptographic properties of the usersystem. If the cryptographic function implements md5 hash values,
+        it is possible to utilize generated rainbow tables to reverse engineer the string that results in the hash
+        value on file in the users shadow file which contains passwords on unix.
+    </p>
+    <p>
+    </p>
+    <h3><b></b></h3>
+    <p>
+        Once we connect this on our bread board we notice that we account for the
+        LEDS in sequence of
+
+        <img style="width:50%;" src="../assets/images/article_images/tlc5940_scematic.png">
+    </p>
+
+    <h3><b>The Code</b></h3>
+    <p>
+The first thing we need in order for this to work is the driver library for the TLC5940 chipss
+We must import this library into our arduino project via Arduino IDE. The library to import can be found at <a href="https://github.com/PaulStoffregen/Tlc5940" target="_blank">https://github.com/PaulStoffregen/Tlc5940</a>.
+The best option is to download the zip file and then from the main bar of the arduino
+IDE select: Sketch>>  Include Library >> ADD Zip Library
+    </p>
+    <div class="" style="overflow: scroll; ">
+        <div class="card" style="height: 270px;"><pre data-start="1"><code class="language-c++ line-numbers">#include "Tlc5940.h"///make sure to import this library
+
+////make sure to edit the tlc_config.h file to define how many tlc5940s are in use
+////change #define NUM_TLCS    1 to reflect:
+///#define NUM_TLCS    2
+
+
+int rgbChannels = 30;//total channels used on the TLC5940's
+int rgb[30]; ///should be the same as the number of channels
+int rgbLights = 10;
+int colorArray[10];
+
+void setup() {
+  // put your setup code here, to run once
+  Tlc.init(0); // Initiates the TLC5940 and set all channels off
+  Serial.begin(250000);
+  Serial.println("Total Channels: " + String(rgbChannels) + "  Total RGB Ligts: " + String(rgbLights));
+  float divisor = 360 / (rgbChannels / 3); //degrees of color to display divided by the number of rgb lights
+  Serial.println("Divisor: " + String(divisor) );
+  float Step = divisor;
+  for (int i = 0; i < rgbLights; i++) {
+    colorArray[i] = Step;
+    Serial.println("colorArray[" + String(i) + "]: " + String(colorArray[i]));
+    Step = Step + divisor;
+  }
+}
+
+void ledColor(int channel, int red, int green, int blue)
+{
+  Tlc.set(channel, red);
+  Tlc.set(channel + 1, green);
+  Tlc.set(channel + 2, blue);
+}
+
+void hsi_to_rgb(int startChannel, float H, float S, float I) {
+  int r, g, b;
+  if (H > 360) {
+    H = H - 360;
+  }
+  // Serial.println("H: "+String(H));
+  H = fmod(H, 360); // cycle H around to 0-360 degrees
+  H = 3.14159 * H / (float)180; // Convert to radians.
+  S = S > 0 ? (S < 1 ? S : 1) : 0; // clamp S and I to interval [0,1]
+  I = I > 0 ? (I < 1 ? I : 1) : 0;
+  if (H < 2.09439) {
+    r = 4095 * I / 3 * (1 + S * cos(H) / cos(1.047196667 - H));
+    g = 4095 * I / 3 * (1 + S * (1 - cos(H) / cos(1.047196667 - H)));
+    b = 4095 * I / 3 * (1 - S);
+  } else if (H < 4.188787) {
+    H = H - 2.09439;
+    g = 4095 * I / 3 * (1 + S * cos(H) / cos(1.047196667 - H));
+    b = 4095 * I / 3 * (1 + S * (1 - cos(H) / cos(1.047196667 - H)));
+    r = 4095 * I / 3 * (1 - S);
+  } else {
+    H = H - 4.188787;
+    b = 4095 * I / 3 * (1 + S * cos(H) / cos(1.047196667 - H));
+    r = 4095 * I / 3 * (1 + S * (1 - cos(H) / cos(1.047196667 - H)));
+    g = 4095 * I / 3 * (1 - S);
+  }
+  rgb[0 + startChannel] = r;
+  rgb[1 + startChannel] = g;
+  rgb[2 + startChannel] = b;
+
+}
+
+void oneByoneRv() {
+  for (int i = 30; i > 0; i = i - 3) {
+    int color = 0;
+    for (int j = 0; j < 360; j++) {
+      hsi_to_rgb(i, j, 1, .4);
+      ledColor(i, rgb[i], rgb[i + 1], rgb[i + 2]);
+      delayMicroseconds(50);
+      Tlc.update();
+      Tlc.clear();
+      delayMicroseconds(30); color++;
+    }
+    Tlc.init(0);
+    Tlc.update();
+    Tlc.clear();
+    delayMicroseconds(10);
+  }
+}
+
+void oneByone() {
+  for (int i = 0; i < 30; i = i + 3) {
+    int color = 0;
+    for (int j = 0; j < 360; j++) {
+      hsi_to_rgb(i, j, 1, .4);
+      ledColor(i, rgb[i], rgb[i + 1], rgb[i + 2]);
+      delayMicroseconds(200);
+      Tlc.update();
+      Tlc.clear();
+      delayMicroseconds(30); color++;
+    }
+    Tlc.init(0);
+    Tlc.update();
+    Tlc.clear();
+    delayMicroseconds(10);
+  }
+}
+
+void rainbowShift() {
+  float brightness = .4;
+  float saturation = 1;
+  for (int n = 0; n <= 360; n++) {
+    for (int i = 0, j = 0; i < rgbLights; i++) {
+      hsi_to_rgb(j, colorArray[i] + n, saturation, brightness);
+      //Serial.println("rgb" +String(i)+": "+String(rgb[j])+","+String(rgb[j+1])+","+String(rgb[j+2]));
+      ledColor(j, rgb[j], rgb[j + 1], rgb[j + 2]);
+      j = j + 3;
+    }
+    Tlc.update();
+    Tlc.clear();
+    delayMicroseconds(500);
+  }
+}
+void rainbowShiftRv() {
+  float brightness = .4;
+  float saturation = 1;
+  for (int n = 360; n >= 0; n = n - 1) {
+    for (int i = 0, j = 0; i < rgbLights; i++) {
+      hsi_to_rgb(j, colorArray[i] + n, saturation, brightness);
+      //Serial.println("rgb" +String(i)+": "+String(rgb[j])+","+String(rgb[j+1])+","+String(rgb[j+2]));
+      ledColor(j, rgb[j], rgb[j + 1], rgb[j + 2]);
+      j = j + 3;
+    }
+    Tlc.update();
+    Tlc.clear();
+    delayMicroseconds(500);
+  }
+}
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+rainbowShiftRv() ;
+rainbowShiftRv() ;
+rainbowShiftRv() ;
+rainbowShiftRv() ;
+rainbowShiftRv() ;
+rainbowShift() ;
+rainbowShift() ;
+rainbowShift() ;
+rainbowShift() ;
+
+}</code></pre>
+
+
+        </div>
+
+
+    </div>
+
+    <h3><b>Video</b></h3>
+<p>We can see the result in this video and the shifting colors from the algorithms
+written in the code.
+
+</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/CWdL9i8U8U0" frameborder="0" allowfullscreen></iframe>
+</br></br></br>
+</div>
+{{end}} {{define "footer"}} {{end}} {{define "bottom-bar"}} {{end}}
